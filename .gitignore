@@ -1,3 +1,5 @@
 ignore/
 node_modules/
 .claude/
+.web_plan*.md
+HANDOFF.md
