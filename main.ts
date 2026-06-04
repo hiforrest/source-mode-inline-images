@@ -1,4 +1,4 @@
-import { Plugin, TFile } from "obsidian";
+import { MarkdownView, Plugin, TFile } from "obsidian";
 import {
   Decoration,
   DecorationSet,
@@ -23,28 +23,22 @@ class ImageWidget extends WidgetType {
     wrapper.addClass("source-mode-inline-image-wrapper");
 
     if (!this.src) {
-      wrapper.setText(this.errorText ?? "图片路径为空");
+      wrapper.setText(this.errorText ?? "Image path is empty");
       wrapper.addClass("source-mode-inline-image-error");
       return wrapper;
+    }
+
+    if (this.width) {
+      wrapper.style.setProperty("--source-mode-inline-image-width", `${this.width}px`);
+      wrapper.addClass("source-mode-inline-image-wrapper--custom-width");
     }
 
     const img = document.createElement("img");
     img.addClass("source-mode-inline-image");
     img.src = this.src;
 
-    if (this.width) {
-      img.style.width = `${this.width}px`;
-      img.style.maxWidth = `${this.width}px`;
-    } else {
-      img.style.maxWidth = "480px";
-    }
-
-    img.style.height = "auto";
-    img.style.display = "block";
-    img.style.margin = "8px 0";
-
     img.onerror = () => {
-      wrapper.setText(`图片加载失败: ${this.src}`);
+      wrapper.setText(`Failed to load image: ${this.src}`);
       wrapper.addClass("source-mode-inline-image-error");
     };
 
@@ -88,18 +82,22 @@ export default class SourceModeInlineImagesPlugin extends Plugin {
   }
 }
 
+function isStrictSourceMode(plugin: SourceModeInlineImagesPlugin): boolean {
+  const markdownView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+  if (!markdownView) return false;
+
+  const state = markdownView.getState?.();
+  return state?.source === true;
+}
+
 function buildDecorations(
   view: EditorView,
   plugin: SourceModeInlineImagesPlugin
 ): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();
 
-  const activeLeaf = plugin.app.workspace.activeLeaf;
-  if (!activeLeaf) return builder.finish();
-
   // 只在严格源码模式下生效，Live Preview 模式跳过（避免与 Obsidian 原生渲染重复）
-  const viewState = (activeLeaf as any).getViewState?.();
-  if (viewState?.state?.source !== true) return builder.finish();
+  if (!isStrictSourceMode(plugin)) return builder.finish();
 
   const activeFile = plugin.app.workspace.getActiveFile();
   if (!activeFile) return builder.finish();
@@ -129,7 +127,7 @@ function buildDecorations(
           end,
           end,
           Decoration.widget({
-            widget: new ImageWidget("", width, `找不到图片文件: ${imagePath}`),
+            widget: new ImageWidget("", width, `Image not found: ${imagePath}`),
             side: 1,
           })
         );

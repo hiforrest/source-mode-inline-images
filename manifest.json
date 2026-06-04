@@ -3,8 +3,8 @@
   "name": "Source Mode Inline Images",
   "version": "0.1.0",
   "minAppVersion": "1.5.0",
-  "description": "Show images below image links in Obsidian source mode.",
+  "description": "Render image previews below image links in Source mode.",
   "author": "kat",
-  "authorUrl": "http://k.appinn.me",
+  "authorUrl": "https://k.appinn.me/",
   "isDesktopOnly": false
 }

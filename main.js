@@ -37,24 +37,19 @@ var ImageWidget = class extends import_view.WidgetType {
     const wrapper = document.createElement("div");
     wrapper.addClass("source-mode-inline-image-wrapper");
     if (!this.src) {
-      wrapper.setText((_a = this.errorText) != null ? _a : "\u56FE\u7247\u8DEF\u5F84\u4E3A\u7A7A");
+      wrapper.setText((_a = this.errorText) != null ? _a : "Image path is empty");
       wrapper.addClass("source-mode-inline-image-error");
       return wrapper;
+    }
+    if (this.width) {
+      wrapper.style.setProperty("--source-mode-inline-image-width", `${this.width}px`);
+      wrapper.addClass("source-mode-inline-image-wrapper--custom-width");
     }
     const img = document.createElement("img");
     img.addClass("source-mode-inline-image");
     img.src = this.src;
-    if (this.width) {
-      img.style.width = `${this.width}px`;
-      img.style.maxWidth = `${this.width}px`;
-    } else {
-      img.style.maxWidth = "480px";
-    }
-    img.style.height = "auto";
-    img.style.display = "block";
-    img.style.margin = "8px 0";
     img.onerror = () => {
-      wrapper.setText(`\u56FE\u7247\u52A0\u8F7D\u5931\u8D25: ${this.src}`);
+      wrapper.setText(`Failed to load image: ${this.src}`);
       wrapper.addClass("source-mode-inline-image-error");
     };
     wrapper.appendChild(img);
@@ -86,13 +81,16 @@ var SourceModeInlineImagesPlugin = class extends import_obsidian.Plugin {
     ]);
   }
 };
+function isStrictSourceMode(plugin) {
+  var _a;
+  const markdownView = plugin.app.workspace.getActiveViewOfType(import_obsidian.MarkdownView);
+  if (!markdownView) return false;
+  const state = (_a = markdownView.getState) == null ? void 0 : _a.call(markdownView);
+  return (state == null ? void 0 : state.source) === true;
+}
 function buildDecorations(view, plugin) {
-  var _a, _b;
   const builder = new import_state.RangeSetBuilder();
-  const activeLeaf = plugin.app.workspace.activeLeaf;
-  if (!activeLeaf) return builder.finish();
-  const viewState = (_a = activeLeaf.getViewState) == null ? void 0 : _a.call(activeLeaf);
-  if (((_b = viewState == null ? void 0 : viewState.state) == null ? void 0 : _b.source) !== true) return builder.finish();
+  if (!isStrictSourceMode(plugin)) return builder.finish();
   const activeFile = plugin.app.workspace.getActiveFile();
   if (!activeFile) return builder.finish();
   const sourcePath = activeFile.path;
@@ -115,7 +113,7 @@ function buildDecorations(view, plugin) {
           end,
           end,
           import_view.Decoration.widget({
-            widget: new ImageWidget("", width, `\u627E\u4E0D\u5230\u56FE\u7247\u6587\u4EF6: ${imagePath}`),
+            widget: new ImageWidget("", width, `Image not found: ${imagePath}`),
             side: 1
           })
         );
