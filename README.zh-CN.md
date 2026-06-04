@@ -21,7 +21,7 @@
 
 ### 手动安装
 
-1. 前往 [Releases](https://github.com/kat/source-mode-inline-images/releases/latest) 页面，下载最新版本的 `main.js`、`manifest.json`、`styles.css`
+1. 前往 [Releases](https://github.com/hiforrest/source-mode-inline-images/releases/latest) 页面，下载最新版本的 `main.js`、`manifest.json`、`styles.css`
 2. 在你的 Obsidian 库中，进入 `.obsidian/plugins/` 目录
 3. 新建文件夹 `source-mode-inline-images`，将上述三个文件放入其中
 4. 在 Obsidian 设置 → 第三方插件 中，关闭「安全模式」，然后启用 **Source Mode Inline Images**
@@ -29,7 +29,7 @@
 ### 从源码构建
 
 ```bash
-git clone https://github.com/kat/source-mode-inline-images.git
+git clone https://github.com/hiforrest/source-mode-inline-images.git
 cd source-mode-inline-images
 npm install
 npm run build

@@ -17,7 +17,7 @@ Coming soon.
 
 ### Manual installation
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/kat/source-mode-inline-images/releases/latest).
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/hiforrest/source-mode-inline-images/releases/latest).
 2. Copy them to your vault's `.obsidian/plugins/source-mode-inline-images/` folder.
 3. Reload Obsidian and enable the plugin in Settings → Community plugins.
 
