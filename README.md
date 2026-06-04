@@ -13,7 +13,7 @@ Render image previews directly below image links in Obsidian Source mode.
 
 ### From Obsidian Community Plugins
 
-Coming soon.
+Search for "Source Mode Inline Images" in Obsidian's Community Plugins browser.
 
 ### Manual installation
 
