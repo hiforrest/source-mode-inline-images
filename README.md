@@ -3,6 +3,7 @@
 <p align="center">
   <img src="imgs/logo-github.avif" alt="Source Mode Inline Images" width="280">
 </p>
+
 So you're using Obsidian in Live Preview mode. You move your cursor over a formatted word and boom, the hidden markdown syntax pops out and shoves your text halfway across the screen. This constant jumping is a total flow-killer. I call it **Editor ADHD**.
 
 Markdown was originally built for the content and the syntax to live together. Why not just go back to Source Mode? In Source Mode, what you see is exactly what you typed. Asterisks stay asterisks. Nothing disappears, nothing jumps out, and nothing breaks your focus. That's how writing is supposed to feel.
