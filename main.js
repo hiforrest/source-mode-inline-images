@@ -34,7 +34,7 @@ var ImageWidget = class extends import_view.WidgetType {
   }
   toDOM() {
     var _a;
-    const wrapper = document.createElement("div");
+    const wrapper = activeDocument.createElement("div");
     wrapper.addClass("source-mode-inline-image-wrapper");
     if (!this.src) {
       wrapper.setText((_a = this.errorText) != null ? _a : "Image path is empty");
@@ -45,7 +45,7 @@ var ImageWidget = class extends import_view.WidgetType {
       wrapper.style.setProperty("--source-mode-inline-image-width", `${this.width}px`);
       wrapper.addClass("source-mode-inline-image-wrapper--custom-width");
     }
-    const img = document.createElement("img");
+    const img = activeDocument.createElement("img");
     img.addClass("source-mode-inline-image");
     img.src = this.src;
     img.onerror = () => {
@@ -61,16 +61,16 @@ var ImageWidget = class extends import_view.WidgetType {
 };
 var SourceModeInlineImagesPlugin = class extends import_obsidian.Plugin {
   async onload() {
-    const plugin = this;
+    const { app } = this;
     this.registerEditorExtension([
       import_view.ViewPlugin.fromClass(
         class {
           constructor(view) {
-            this.decorations = buildDecorations(view, plugin);
+            this.decorations = buildDecorations(view, app);
           }
           update(update) {
             if (update.docChanged || update.viewportChanged || update.selectionSet) {
-              this.decorations = buildDecorations(update.view, plugin);
+              this.decorations = buildDecorations(update.view, app);
             }
           }
         },
@@ -81,17 +81,17 @@ var SourceModeInlineImagesPlugin = class extends import_obsidian.Plugin {
     ]);
   }
 };
-function isStrictSourceMode(plugin) {
+function isStrictSourceMode(app) {
   var _a;
-  const markdownView = plugin.app.workspace.getActiveViewOfType(import_obsidian.MarkdownView);
+  const markdownView = app.workspace.getActiveViewOfType(import_obsidian.MarkdownView);
   if (!markdownView) return false;
   const state = (_a = markdownView.getState) == null ? void 0 : _a.call(markdownView);
   return (state == null ? void 0 : state.source) === true;
 }
-function buildDecorations(view, plugin) {
+function buildDecorations(view, app) {
   const builder = new import_state.RangeSetBuilder();
-  if (!isStrictSourceMode(plugin)) return builder.finish();
-  const activeFile = plugin.app.workspace.getActiveFile();
+  if (!isStrictSourceMode(app)) return builder.finish();
+  const activeFile = app.workspace.getActiveFile();
   if (!activeFile) return builder.finish();
   const sourcePath = activeFile.path;
   const wikiImageRegex = /!\[\[([^\]|]+)(?:\|(\d+))?\]\]/g;
@@ -104,7 +104,7 @@ function buildDecorations(view, plugin) {
       const width = match[2];
       const start = from + match.index;
       const end = start + fullMatch.length;
-      const file = plugin.app.metadataCache.getFirstLinkpathDest(
+      const file = app.metadataCache.getFirstLinkpathDest(
         imagePath,
         sourcePath
       );
@@ -119,7 +119,7 @@ function buildDecorations(view, plugin) {
         );
         continue;
       }
-      const resourcePath = plugin.app.vault.getResourcePath(file);
+      const resourcePath = app.vault.getResourcePath(file);
       builder.add(
         end,
         end,

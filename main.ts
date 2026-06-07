@@ -1,4 +1,4 @@
-import { MarkdownView, Plugin, TFile } from "obsidian";
+import { App, MarkdownView, Plugin, TFile } from "obsidian";
 import {
   Decoration,
   DecorationSet,
@@ -19,7 +19,7 @@ class ImageWidget extends WidgetType {
   }
 
   toDOM() {
-    const wrapper = document.createElement("div");
+    const wrapper = activeDocument.createElement("div");
     wrapper.addClass("source-mode-inline-image-wrapper");
 
     if (!this.src) {
@@ -33,7 +33,7 @@ class ImageWidget extends WidgetType {
       wrapper.addClass("source-mode-inline-image-wrapper--custom-width");
     }
 
-    const img = document.createElement("img");
+    const img = activeDocument.createElement("img");
     img.addClass("source-mode-inline-image");
     img.src = this.src;
 
@@ -53,7 +53,7 @@ class ImageWidget extends WidgetType {
 
 export default class SourceModeInlineImagesPlugin extends Plugin {
   async onload() {
-    const plugin = this;
+    const { app } = this;
 
     this.registerEditorExtension([
       ViewPlugin.fromClass(
@@ -61,7 +61,7 @@ export default class SourceModeInlineImagesPlugin extends Plugin {
           decorations: DecorationSet;
 
           constructor(view: EditorView) {
-            this.decorations = buildDecorations(view, plugin);
+            this.decorations = buildDecorations(view, app);
           }
 
           update(update: ViewUpdate) {
@@ -70,7 +70,7 @@ export default class SourceModeInlineImagesPlugin extends Plugin {
               update.viewportChanged ||
               update.selectionSet
             ) {
-              this.decorations = buildDecorations(update.view, plugin);
+              this.decorations = buildDecorations(update.view, app);
             }
           }
         },
@@ -82,8 +82,8 @@ export default class SourceModeInlineImagesPlugin extends Plugin {
   }
 }
 
-function isStrictSourceMode(plugin: SourceModeInlineImagesPlugin): boolean {
-  const markdownView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+function isStrictSourceMode(app: App): boolean {
+  const markdownView = app.workspace.getActiveViewOfType(MarkdownView);
   if (!markdownView) return false;
 
   const state = markdownView.getState?.();
@@ -92,14 +92,14 @@ function isStrictSourceMode(plugin: SourceModeInlineImagesPlugin): boolean {
 
 function buildDecorations(
   view: EditorView,
-  plugin: SourceModeInlineImagesPlugin
+  app: App
 ): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();
 
   // 只在严格源码模式下生效，Live Preview 模式跳过（避免与 Obsidian 原生渲染重复）
-  if (!isStrictSourceMode(plugin)) return builder.finish();
+  if (!isStrictSourceMode(app)) return builder.finish();
 
-  const activeFile = plugin.app.workspace.getActiveFile();
+  const activeFile = app.workspace.getActiveFile();
   if (!activeFile) return builder.finish();
 
   const sourcePath = activeFile.path;
@@ -117,7 +117,7 @@ function buildDecorations(
       const start = from + match.index;
       const end = start + fullMatch.length;
 
-      const file = plugin.app.metadataCache.getFirstLinkpathDest(
+      const file = app.metadataCache.getFirstLinkpathDest(
         imagePath,
         sourcePath
       );
@@ -134,7 +134,7 @@ function buildDecorations(
         continue;
       }
 
-      const resourcePath = plugin.app.vault.getResourcePath(file);
+      const resourcePath = app.vault.getResourcePath(file);
 
       builder.add(
         end,
