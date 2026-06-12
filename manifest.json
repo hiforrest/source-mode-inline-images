@@ -1,6 +1,6 @@
 {
   "id": "source-mode-inline-images",
-  "name": "Source Mode Inline Images",
+  "name": "Source Mode Image Renderer",
   "version": "0.2.0",
   "minAppVersion": "1.5.0",
   "description": "Render image previews below image links in Source mode.",
